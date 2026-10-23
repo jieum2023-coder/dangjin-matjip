@@ -81,7 +81,10 @@ export default function MapView({ list, search }) {
             <ol>
               <li>developers.kakao.com 에서 애플리케이션을 만들고 <b>JavaScript 키</b>를 복사합니다.</li>
               <li>앱 설정 → 플랫폼 → Web 에 이 사이트 주소(예: http://localhost:5173, 배포 주소)를 등록합니다.</li>
-              <li>프로젝트 폴더의 <code>.env</code> 파일에 <code>VITE_KAKAO_JS_KEY=복사한키</code> 를 넣고 다시 실행합니다.</li>
+              <li>
+                배포한 사이트는 Vercel 프로젝트의 Settings → Environment Variables 에 <code>VITE_KAKAO_JS_KEY</code> 를 넣고
+                다시 배포(Redeploy)합니다. 내 컴퓨터에서는 <code>.env</code> 파일에 <code>VITE_KAKAO_JS_KEY=복사한키</code> 를 넣습니다.
+              </li>
             </ol>
           </>
         ) : (
