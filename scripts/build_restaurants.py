@@ -316,7 +316,14 @@ def main():
             seen[k] = rec
         merged.append(rec)
 
+    # scripts/geocode.mjs 가 찾아 둔 좌표·법정동을 다시 채운다
+    geo_path = ROOT / "geo_cache.json"
+    geo = json.loads(geo_path.read_text(encoding="utf-8")) if geo_path.exists() else {}
     for rec in merged:
+        g = geo.get(rec["id"])
+        if g and g.get("lat"):
+            rec["lat"], rec["lng"] = g["lat"], g["lng"]
+            rec["region"] = rec["region"] or g.get("region")
         rec["area"] = None if not rec["region"] else rec["region"] if rec["region"] in EUP_MYEON else "시내"
 
     out = PROJECT / "public" / "restaurants.json"

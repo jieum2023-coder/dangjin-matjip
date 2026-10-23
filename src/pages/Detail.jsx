@@ -1,6 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { COMPANIONS, directionsUrl, show, telHref, useRestaurants, yearsAgo, yesNo } from '../data'
 import Footer from '../components/Footer'
+import { cachedCoords } from '../kakao'
 
 function Row({ label, children }) {
   return (
@@ -50,7 +51,7 @@ export default function Detail() {
           {r.phone
             ? <a className="btn primary" href={telHref(r.phone)}>📞 전화 걸기</a>
             : <span className="btn disabled">📞 전화번호 확인 중</span>}
-          <a className="btn" href={directionsUrl(r)} target="_blank" rel="noreferrer">🧭 길찾기</a>
+          <a className="btn" href={directionsUrl(r.lat ? r : { ...r, ...cachedCoords(r.address) })} target="_blank" rel="noreferrer">🧭 길찾기</a>
         </div>
 
         <h2>대표메뉴</h2>

@@ -6,6 +6,7 @@ import FilterPanel from '../components/FilterPanel'
 import RandomPick from '../components/RandomPick'
 import RestaurantCard from '../components/RestaurantCard'
 import Footer from '../components/Footer'
+import MapView from '../components/MapView'
 
 const PAGE = 40
 
@@ -69,7 +70,7 @@ export default function Home() {
       <RandomPick list={list} search={search} />
 
       {f.view === 'map' ? (
-        <p className="status">지도 보기는 다음 단계에서 붙일 예정이에요.</p>
+        <MapView list={list} search={search} />
       ) : list.length === 0 ? (
         <div className="status">
           <p>조건에 맞는 곳이 아직 없어요.</p>

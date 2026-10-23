@@ -18,7 +18,8 @@ function Chip({ on, onClick, children, count }) {
 
 export default function FilterPanel({ all, filters }) {
   const { f, toggle, update } = filters
-  const [tab, setTab] = useState('w')
+  // 지도 보기에서는 지도가 잘 보이도록 패널을 접은 채로 시작한다. 같은 탭을 다시 누르면 접힌다.
+  const [tab, setTab] = useState(f.view === 'map' ? null : 'w')
 
   const counts = useMemo(() => {
     const by = (key) => all.reduce((m, r) => ((m[r[key]] = (m[r[key]] ?? 0) + 1), m), {})
@@ -44,7 +45,7 @@ export default function FilterPanel({ all, filters }) {
             role="tab"
             aria-selected={tab === t.key}
             className={`tab${tab === t.key ? ' active' : ''}`}
-            onClick={() => setTab(t.key)}
+            onClick={() => setTab(tab === t.key ? null : t.key)}
           >
             {t.label}
             {selected[t.key] > 0 && <span className="badge">{selected[t.key]}</span>}
@@ -52,7 +53,7 @@ export default function FilterPanel({ all, filters }) {
         ))}
       </div>
 
-      <div className="tab-panel" role="tabpanel">
+      {tab && <div className="tab-panel" role="tabpanel">
         {tab === 'w' && (
           <>
             <div className="big-buttons">
@@ -114,7 +115,7 @@ export default function FilterPanel({ all, filters }) {
             )}
           </>
         )}
-      </div>
+      </div>}
     </section>
   )
 }
