@@ -178,3 +178,42 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .map-setup li { margin: 6px 0; }
 .map-setup code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; word-break: break-all; }
 .filters:not(:has(.tab-panel)) .tab { border-radius: 12px; }
+
+/* 관리 화면 */
+.admin { padding-bottom: 120px; }
+.admin-header { justify-content: space-between; }
+.admin h1 { font-size: 1.5rem; margin: 8px 0; }
+.wide { width: 100%; margin: 8px 0; }
+.search.wide { flex: none; }
+.admin-list { list-style: none; padding: 0; margin: 8px 0; }
+.admin-list a {
+  display: flex; flex-direction: column; gap: 2px; padding: 12px 4px; min-height: 56px;
+  border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none;
+}
+.admin-list .name { font-weight: 700; font-size: 1.1rem; display: flex; gap: 8px; align-items: center; }
+.admin-login { display: grid; gap: 12px; padding-top: 48px; }
+.admin-login input, .field input, .field select, .field textarea {
+  width: 100%; font: inherit; font-size: 1.05rem; padding: 12px; border-radius: 12px;
+  border: 2px solid var(--line); background: var(--card); color: var(--text);
+}
+.error { color: #c62828; font-weight: 700; margin: 4px 0; }
+.ok { color: #2e7d32; font-weight: 700; margin: 4px 0; }
+@media (prefers-color-scheme: dark) { .error { color: #ff8a80; } .ok { color: #81c784; } }
+.panel { background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 4px 14px 14px; margin: 16px 0; }
+.panel h2 { font-size: 1.2rem; margin: 14px 0 8px; }
+.field { display: grid; gap: 6px; margin: 12px 0; }
+.field > span { font-weight: 700; }
+.tri { margin: 12px 0; }
+.tri-label { display: block; font-weight: 700; margin-bottom: 6px; }
+.tri-buttons { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }
+.tri-buttons button {
+  min-height: 52px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); font-size: 1.05rem; font-weight: 700;
+}
+.tri-buttons button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.btn.danger { color: #c62828; border-color: #c62828; background: transparent; }
+.save-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--bg); border-top: 2px solid var(--line);
+}
+.save-bar > * { max-width: 688px; margin-left: auto; margin-right: auto; }
+.save-bar .btn { display: flex; }

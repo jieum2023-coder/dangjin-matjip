@@ -23,22 +23,48 @@ export const COMPANIONS = [
   { key: 'party', label: '회식', tag: '회식', hint: '회식·모임', match: (r) => r.companions.includes('회식') },
 ]
 
+// 데이터 저장본과 화면 갱신 알림. 관리 화면에서 저장하면 updateCache 로 바로 반영한다.
 let cache = null
+let inflight = null
+const listeners = new Set()
+
+async function fetchData() {
+  // 관리 화면에서 고친 최신 데이터는 API 에서, API 가 없는 환경(정적 배포·vite 단독 실행)에선 기본 파일에서 읽는다
+  for (const url of ['/api/restaurants', '/restaurants.json']) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' })
+      if (res.ok && res.headers.get('content-type')?.includes('json')) return await res.json()
+    } catch {
+      // 다음 주소로 시도
+    }
+  }
+  throw new Error('데이터를 불러오지 못했어요')
+}
+
+export function updateCache(fn) {
+  if (!cache) return
+  cache = fn(cache)
+  listeners.forEach((l) => l(cache))
+}
 
 export function useRestaurants() {
-  const [state, setState] = useState(cache ? { data: cache, error: null } : { data: null, error: null })
+  const [state, setState] = useState({ data: cache, error: null })
   useEffect(() => {
-    if (cache) return
-    fetch('/restaurants.json')
-      .then((res) => {
-        if (!res.ok) throw new Error(res.status)
-        return res.json()
-      })
-      .then((data) => {
-        cache = data
-        setState({ data, error: null })
-      })
-      .catch((error) => setState({ data: null, error }))
+    const listener = (data) => setState({ data, error: null })
+    listeners.add(listener)
+    if (!cache) {
+      inflight ??= fetchData()
+      inflight
+        .then((data) => {
+          cache = data
+          listeners.forEach((l) => l(cache))
+        })
+        .catch((error) => {
+          inflight = null
+          setState({ data: null, error })
+        })
+    }
+    return () => listeners.delete(listener)
   }, [])
   return state
 }

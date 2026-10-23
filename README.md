@@ -47,6 +47,9 @@ python3 scripts/build_restaurants.py  # 검토 파일과 합쳐 public/restauran
 
 ## 배포 (Vercel)
 
+관리 화면을 쓰려면 아래 "관리 화면 → Vercel 에서 처음 한 번 설정"도 함께 해 주세요.
+
+
 1. 이 폴더를 GitHub 저장소에 올립니다.
 2. [vercel.com](https://vercel.com) 에서 **Add New → Project** 로 저장소를 고릅니다.
 3. Framework Preset 은 **Vite** 로 자동 인식됩니다(빌드 명령 `npm run build`, 출력 폴더 `dist`).
@@ -84,4 +87,37 @@ node scripts/geocode.mjs
 스크립트를 돌리지 않아도 지도는 동작합니다. 좌표가 없는 가게는 지도를 열 때 브라우저가 주소로 위치를
 찾고, 그 결과를 그 기기에 저장해 두었다가 다음부터 다시 씁니다. 다만 기기마다 처음 한 번은 느릴 수 있습니다.
 
-관리 화면 설정은 해당 단계에서 이 문서에 추가합니다.
+## 관리 화면 (/admin)
+
+주소 뒤에 `/admin` 을 붙이면 열립니다(예: `https://내프로젝트.vercel.app/admin`). 앱 화면에는 링크가 없습니다.
+
+- 비밀번호로 로그인하면 12시간 동안 유지됩니다.
+- 목록: 오래된 기사순·최근 기사순·최근 확인순 정렬, "확인 안 한 곳만" 보기, 검색, 새 가게 추가.
+- 가게 화면 맨 위 **방문 체크**: 영업 상태, 룸(최대 인원), 아기의자, 놀이방, 주차, 계단을 있음/없음/모름 큰 버튼으로,
+  좌석과 식사상대 태그도 버튼으로 고릅니다. 아래에서 기본 정보·대표메뉴·기사 정보를 고칠 수 있습니다.
+- **저장하면 최종확인일이 오늘(한국 시간)로 자동으로 바뀝니다.** 앱에는 바로 반영됩니다.
+- 아기의자·놀이방을 "있음"으로 저장하면 앱의 "어린이 동반", 룸을 "있음"으로 저장하면 "업무 미팅(룸)" 필터에도 나옵니다.
+
+### Vercel 에서 처음 한 번 설정
+
+1. Vercel 프로젝트 → **Storage → Create Database → Blob** 을 만들어 이 프로젝트에 연결합니다.
+   `BLOB_READ_WRITE_TOKEN` 환경변수가 자동으로 추가됩니다.
+2. **Settings → Environment Variables** 에 `ADMIN_PASSWORD` (관리 비밀번호)를 넣습니다. 길고 남이 짐작하기 어렵게 정해 주세요.
+3. 다시 배포(Redeploy)합니다.
+
+저장 방식: 저장할 때마다 Blob 에 `data/restaurants-<시각>.json` 새 파일을 만들고 앱은 가장 최근 파일을 읽습니다.
+최근 30개 버전이 백업으로 남으니, 잘못 저장했을 때는 Vercel Blob 화면에서 예전 파일을 내려받을 수 있습니다.
+아직 한 번도 저장하지 않았으면 배포에 들어 있는 `public/restaurants.json` 을 씁니다.
+
+> 관리 화면에서 한 번이라도 저장한 뒤부터는 Blob 에 있는 데이터가 기준입니다.
+> `scripts/geocode.mjs` 로 좌표를 넣으려면 **첫 저장 전에** 돌려서 배포해 두는 것이 가장 간단합니다.
+
+### 로컬에서 관리 화면 써 보기
+
+```bash
+# .env 에 ADMIN_PASSWORD=원하는비밀번호 를 넣은 뒤 터미널 두 개에서
+npm run dev:api   # API 서버 (http://localhost:3001)
+npm run dev       # 앱 (http://localhost:5173, /api 요청은 API 서버로 전달)
+```
+
+`.env` 에 `BLOB_READ_WRITE_TOKEN` 이 없으면 로컬의 `.data/restaurants.json` 에 저장합니다(저장소에는 올라가지 않음).
