@@ -4,7 +4,18 @@
 // DELETE /api/restaurants?id=...   가게 삭제 (관리자)
 import { isAuthorized, json } from './_lib/auth.js'
 import { blankRecord, sanitizePatch, todayKST } from './_lib/record.js'
-import { readAll, writeAll } from './_lib/store.js'
+import { StoreError, readAll, writeAll } from './_lib/store.js'
+
+// 저장소 오류를 숨기지 않고 관리 화면에 원인을 보여 준다
+const guard = (fn) => async (request) => {
+  try {
+    return await fn(request)
+  } catch (e) {
+    console.error(e)
+    const detail = e instanceof StoreError ? e.message : `저장소 오류: ${e?.message ?? e}`
+    return json({ error: detail }, 500)
+  }
+}
 
 const unauthorized = () => json({ error: '로그인이 필요해요.' }, 401)
 
@@ -16,11 +27,11 @@ async function body(request) {
   }
 }
 
-export async function GET(request) {
+export const GET = guard(async (request) => {
   return json(await readAll(request))
-}
+})
 
-export async function POST(request) {
+export const POST = guard(async (request) => {
   if (!isAuthorized(request)) return unauthorized()
   const patch = sanitizePatch(await body(request))
   if (!patch.name) return json({ error: '상호를 입력해 주세요.' }, 400)
@@ -34,9 +45,9 @@ export async function POST(request) {
   all.unshift(rec)
   await writeAll(all)
   return json(rec, 201)
-}
+})
 
-export async function PUT(request) {
+export const PUT = guard(async (request) => {
   if (!isAuthorized(request)) return unauthorized()
   const id = new URL(request.url).searchParams.get('id')
   const all = await readAll(request)
@@ -51,9 +62,9 @@ export async function PUT(request) {
   all[i] = { ...all[i], ...patch, id, lastChecked: todayKST() }
   await writeAll(all)
   return json(all[i])
-}
+})
 
-export async function DELETE(request) {
+export const DELETE = guard(async (request) => {
   if (!isAuthorized(request)) return unauthorized()
   const id = new URL(request.url).searchParams.get('id')
   const all = await readAll(request)
@@ -61,4 +72,4 @@ export async function DELETE(request) {
   if (next.length === all.length) return json({ error: '가게를 찾을 수 없어요.' }, 404)
   await writeAll(next)
   return json({ ok: true })
-}
+})
