@@ -1,6 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { COMPANIONS, directionsUrl, show, telHref, useRestaurants, yearsAgo, yesNo } from '../data'
 import Footer from '../components/Footer'
+import Thumb from '../components/Thumb'
 import { cachedCoords } from '../kakao'
 
 function Row({ label, children }) {
@@ -33,6 +34,7 @@ export default function Detail() {
       </header>
 
       <article className="detail">
+        {r.photo && <Thumb r={r} big />}
         <h1>{r.name ?? '상호 확인 중'}</h1>
         <p className="meta">
           <span className="pill">{r.cuisine}</span>

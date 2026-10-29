@@ -9,7 +9,7 @@ const SEATING = ['좌식', '입식', '좌식·입식']
 const EMPTY = {
   name: '', address: '', region: '', phone: '', cuisine: '한식', companions: [], hasRoom: null, roomCapacity: '',
   babyChair: null, playroom: null, parking: null, seating: null, stairs: null, priceRange: null, menu: [],
-  hours: '', closedDays: '', intro: '', owner: '', closed: null, article: { title: '', url: '', date: '' },
+  hours: '', closedDays: '', intro: '', owner: '', closed: null, photo: '', article: { title: '', url: '', date: '' },
 }
 
 /** 있음/없음/모름 세 가지 중 하나를 고르는 큰 버튼 */
@@ -96,6 +96,7 @@ export default function AdminEdit() {
     const payload = {
       ...form,
       region: form.region || null,
+      photo: form.photo || null,
       roomCapacity: form.roomCapacity === '' ? null : Number(form.roomCapacity),
       menu: textToMenu(menuText),
       article: { ...form.article, date: form.article.date || null, url: form.article.url || null },
@@ -196,6 +197,9 @@ export default function AdminEdit() {
         <Field label="영업시간"><input value={form.hours ?? ''} onChange={(e) => set('hours', e.target.value)} /></Field>
         <Field label="휴무일"><input value={form.closedDays ?? ''} onChange={(e) => set('closedDays', e.target.value)} /></Field>
         <Field label="한줄소개"><input value={form.intro ?? ''} onChange={(e) => set('intro', e.target.value)} /></Field>
+        <Field label="사진 주소 (직접 찍어 올린 사진의 https:// 주소, 비우면 음식종류 그림)">
+          <input type="url" value={form.photo ?? ''} onChange={(e) => set('photo', e.target.value)} placeholder="https://" />
+        </Field>
         <Field label="대표자"><input value={form.owner ?? ''} onChange={(e) => set('owner', e.target.value)} /></Field>
         <Field label="대표메뉴 (한 줄에 하나, '이름 | 가격')">
           <textarea rows={6} value={menuText} onChange={(e) => setMenuText(e.target.value)} placeholder={'짬뽕 | 9000원\n탕수육 | 1만8000원'} />

@@ -49,6 +49,7 @@ const FIELDS = {
   intro: (v) => text(v, 200),
   owner: (v) => text(v, 60),
   closed: tri,
+  photo: (v) => (isUrl(v) ? v.slice(0, 500) : null),
   article: (v) => ({
     title: text(v?.title, 200),
     url: isUrl(v?.url) ? v.url.slice(0, 300) : null,
@@ -75,6 +76,6 @@ export function blankRecord() {
     cuisine: '기타', companions: [], hasRoom: null, roomCapacity: null, babyChair: null, playroom: null,
     parking: null, seating: null, stairs: null, priceRange: null, menu: [], hours: null, closedDays: null,
     intro: null, owner: null, article: { title: null, url: null, date: null }, relatedArticles: [],
-    articleMentions: [], closed: null, lastChecked: null,
+    articleMentions: [], closed: null, photo: null, lastChecked: null,
   }
 }

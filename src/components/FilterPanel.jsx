@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { COMPANIONS, CUISINES, EUP_MYEON } from '../data'
 
 const TABS = [
-  { key: 'w', label: '식사상대' },
   { key: 'c', label: '음식종류' },
+  { key: 'w', label: '식사상대' },
   { key: 'a', label: '지역' },
 ]
 
@@ -19,7 +19,7 @@ function Chip({ on, onClick, children, count }) {
 export default function FilterPanel({ all, filters }) {
   const { f, toggle, update } = filters
   // 지도 보기에서는 지도가 잘 보이도록 패널을 접은 채로 시작한다. 같은 탭을 다시 누르면 접힌다.
-  const [tab, setTab] = useState(f.view === 'map' ? null : 'w')
+  const [tab, setTab] = useState(f.view === 'map' ? null : 'c')
 
   const counts = useMemo(() => {
     const by = (key) => all.reduce((m, r) => ((m[r[key]] = (m[r[key]] ?? 0) + 1), m), {})
