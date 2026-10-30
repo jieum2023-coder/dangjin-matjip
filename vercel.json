@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/((?!api/|assets/|icons/|restaurants.json|sw.js|workbox-|manifest.webmanifest|registerSW.js).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|icons/|restaurants.json|thumbs.json|sw.js|workbox-|manifest.webmanifest|registerSW.js).*)", "destination": "/index.html" }
   ]
 }

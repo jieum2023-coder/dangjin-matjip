@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "data": "python3 scripts/build_restaurants.py",
     "dev:api": "node scripts/dev-api.mjs",
-    "geocode": "node scripts/geocode.mjs"
+    "geocode": "node scripts/geocode.mjs",
+    "thumbs": "python3 scripts/fetch_thumbs.py"
   },
   "dependencies": {
     "@vercel/blob": "2.8.1",

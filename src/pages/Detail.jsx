@@ -1,7 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { COMPANIONS, directionsUrl, show, telHref, useRestaurants, yearsAgo, yesNo } from '../data'
 import Footer from '../components/Footer'
-import Thumb from '../components/Thumb'
+import Thumb, { usePhoto } from '../components/Thumb'
 import { cachedCoords } from '../kakao'
 
 function Row({ label, children }) {
@@ -10,6 +10,21 @@ function Row({ label, children }) {
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
+  )
+}
+
+function DetailPhoto({ r }) {
+  const photo = usePhoto(r, true)
+  if (!photo) return null
+  return (
+    <figure className="detail-photo">
+      <Thumb r={r} big />
+      {photo.credit && (
+        <figcaption className="muted small">
+          사진: 당진시대 · <a href={r.article.url} target="_blank" rel="noreferrer">기사 보기</a>
+        </figcaption>
+      )}
+    </figure>
   )
 }
 
@@ -34,7 +49,7 @@ export default function Detail() {
       </header>
 
       <article className="detail">
-        {r.photo && <Thumb r={r} big />}
+        <DetailPhoto r={r} />
         <h1>{r.name ?? '상호 확인 중'}</h1>
         <p className="meta">
           <span className="pill">{r.cuisine}</span>

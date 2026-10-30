@@ -33,7 +33,7 @@ export default defineConfig({
         // 식당 데이터는 새 버전을 먼저 확인하고, 오프라인일 때만 저장본을 쓴다
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname === '/restaurants.json' || url.pathname === '/api/restaurants',
+            urlPattern: ({ url }) => url.pathname === '/restaurants.json' || url.pathname === '/thumbs.json' || url.pathname === '/api/restaurants',
             handler: 'NetworkFirst',
             options: { cacheName: 'restaurants-data' },
           },
