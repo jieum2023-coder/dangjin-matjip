@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useRestaurants } from '../data'
-import { getToken, login, logout } from './api'
+import { updateCache, useRestaurants } from '../data'
+import { AuthError, geocodeBatch, getToken, login, logout } from './api'
 
 function Login({ onDone }) {
   const [pw, setPw] = useState('')
@@ -29,6 +29,49 @@ function Login({ onDone }) {
       <button type="submit" className="btn primary" disabled={busy || !pw}>{busy ? '확인 중…' : '들어가기'}</button>
       <Link to="/" className="back">← 앱으로 돌아가기</Link>
     </form>
+  )
+}
+
+/** 좌표가 없는 가게를 카카오 주소 검색으로 채운다. 한 번 요청에 100곳씩, 남은 곳이 없을 때까지 되풀이 */
+function GeocodePanel({ data, onAuthError }) {
+  const [state, setState] = useState(null)
+  const missing = data.filter((r) => r.lat == null && /\d/.test(r.address ?? '') && r.geoTried !== r.address).length
+
+  const run = async () => {
+    setState({ busy: true, text: '좌표를 찾는 중…' })
+    let found = 0
+    let failed = 0
+    try {
+      for (;;) {
+        const res = await geocodeBatch()
+        found += res.found
+        failed += res.failed
+        setState({ busy: true, text: `찾음 ${found}곳 · 못 찾음 ${failed}곳 · 남은 곳 ${res.remaining}곳` })
+        if (res.remaining === 0 || res.found + res.failed === 0) {
+          const all = await (await fetch('/api/restaurants', { cache: 'no-store' })).json()
+          updateCache(() => all)
+          setState({ text: `끝났어요. 찾음 ${found}곳 · 못 찾음 ${failed}곳 (지도에 표시되는 곳 ${res.withCoords}/${res.total})` })
+          return
+        }
+      }
+    } catch (e) {
+      if (e instanceof AuthError) onAuthError()
+      setState({ error: true, text: `${e.message} (찾음 ${found}곳까지는 저장됐어요)` })
+    }
+  }
+
+  return (
+    <section className="panel">
+      <h2>지도 좌표 채우기</h2>
+      <p className="muted small">
+        좌표가 없는 곳 {missing}곳. 주소로 위치를 찾아 저장하면 지도에 바로 표시돼요.
+        못 찾은 곳은 주소를 고친 뒤 다시 누르면 다시 찾아요.
+      </p>
+      {state && <p className={state.error ? 'error' : 'ok'} role="status">{state.text}</p>}
+      <button type="button" className="btn wide" onClick={run} disabled={state?.busy || missing === 0}>
+        {state?.busy ? '찾는 중… (창을 닫지 마세요)' : missing === 0 ? '모두 채워졌어요' : '좌표 채우기'}
+      </button>
+    </section>
   )
 }
 
@@ -69,6 +112,7 @@ export default function AdminHome() {
       </header>
       <p className="muted">전체 {data.length}곳 · 방문 확인 {checked}곳</p>
       <button type="button" className="btn primary wide" onClick={() => navigate('/admin/new')}>+ 새 가게 추가</button>
+      <GeocodePanel data={data} onAuthError={() => setAuthed(false)} />
       <input type="search" className="search wide" placeholder="상호·주소·동으로 찾기" value={q} onChange={(e) => setQ(e.target.value)} />
       <div className="chips">
         {Object.entries(SORTS).map(([k, v]) => (

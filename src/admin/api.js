@@ -54,3 +54,4 @@ export async function login(password) {
 export const createRestaurant = (rec) => call('POST', '/api/restaurants', rec)
 export const updateRestaurant = (id, patch) => call('PUT', `/api/restaurants?id=${encodeURIComponent(id)}`, patch)
 export const deleteRestaurant = (id) => call('DELETE', `/api/restaurants?id=${encodeURIComponent(id)}`)
+export const geocodeBatch = () => call('POST', '/api/geocode')

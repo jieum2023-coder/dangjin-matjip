@@ -85,7 +85,13 @@ npm run thumbs   # = python3 scripts/fetch_thumbs.py
 - 관리 화면의 '사진 주소'를 넣은 가게는 그 사진이 먼저 나오고, 사진이 없거나 안 뜨면 음식종류 그림이 나옵니다.
 - 새 기사를 추가했으면 다시 실행하세요 (이미 모은 기사는 건너뜀).
 
-### 좌표 한 번에 넣기 (권장)
+### 좌표 채우기 — 관리 화면 버튼 (배포한 사이트)
+
+1. Vercel 프로젝트 Settings → Environment Variables 에 `KAKAO_REST_KEY` (카카오 REST API 키)를 넣고 다시 배포합니다.
+2. `/admin` 에 로그인해 **지도 좌표 채우기 → 좌표 채우기** 를 누릅니다. 100곳씩 찾아 저장소(Blob)에 바로 저장합니다.
+3. 못 찾은 곳은 관리 화면에서 주소를 고친 뒤 다시 누르면 다시 찾습니다.
+
+### 좌표 한 번에 넣기 (권장) — 로컬 파일
 
 ```bash
 node scripts/geocode.mjs
