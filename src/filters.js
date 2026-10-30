@@ -8,6 +8,7 @@ export function useFilters() {
   const f = {
     q: params.get('q') ?? '',
     hint: params.get('hint') === '1',
+    closed: params.get('closed') === '1',
     view: params.get('v') === 'map' ? 'map' : 'list',
   }
   for (const k of KEYS) f[k] = params.get(k) ? params.get(k).split(',') : []
@@ -16,7 +17,7 @@ export function useFilters() {
     const next = new URLSearchParams(params)
     for (const [k, v] of Object.entries(patch)) {
       if (Array.isArray(v)) v.length ? next.set(k, v.join(',')) : next.delete(k)
-      else if (k === 'hint') v ? next.set('hint', '1') : next.delete('hint')
+      else if (k === 'hint' || k === 'closed') v ? next.set(k, '1') : next.delete(k)
       else if (k === 'view') v === 'map' ? next.set('v', 'map') : next.delete('v')
       else v ? next.set(k, v) : next.delete(k)
     }

@@ -74,7 +74,7 @@ export function applyFilters(list, f) {
   const comps = COMPANIONS.filter((c) => f.w.includes(c.key))
   const q = f.q.trim()
   return list.filter((r) => {
-    if (r.closed === true) return false
+    if (r.closed === true && !f.closed) return false
     if (f.c.length ? !f.c.includes(r.cuisine) : r.cuisine === '식당외') return false
     if (f.a.length || f.d.length) {
       const areaOk = f.a.some((a) => a !== '시내' && r.area === a)
@@ -90,6 +90,13 @@ export function applyFilters(list, f) {
     }
     return true
   })
+}
+
+/** 영업 상태 표시. 관리 화면에서 확인한 것만 '영업 중'/'폐업'으로 보여 준다 */
+export function status(r) {
+  if (r.closed === true) return { key: 'closed', label: '폐업', text: `폐업${r.lastChecked ? ` (${r.lastChecked} 확인)` : ''}` }
+  if (r.closed === false) return { key: 'open', label: '영업 중', text: `영업 중${r.lastChecked ? ` (${r.lastChecked} 확인)` : ''}` }
+  return { key: 'unknown', label: null, text: '확인 중' }
 }
 
 export const show = (v) => (v === null || v === undefined || v === '' ? '확인 중' : v)

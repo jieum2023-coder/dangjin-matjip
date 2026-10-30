@@ -242,3 +242,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .t-1, .t-2, .t-3, .t-4, .t-5, .t-6, .t-7, .t-8, .t-9 { background: #2e2824; }
 }
 @media (max-width: 360px) { .thumb { width: 64px; height: 64px; font-size: 2rem; } }
+
+/* 영업 상태 */
+.status-pill {
+  display: inline-block; vertical-align: middle; margin-left: 8px; padding: 1px 9px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 700; white-space: nowrap;
+}
+.status-pill.open { background: #e3f2df; color: #2e6b26; }
+.status-pill.closed { background: #4a4a4a; color: #fff; }
+.meta .status-pill { margin-left: 0; }
+.card.is-closed { opacity: 0.6; }
+.card.is-closed .thumb { filter: grayscale(1); }
+.closed-toggle { margin: 0 0 12px; }
+@media (prefers-color-scheme: dark) {
+  .status-pill.open { background: #24361f; color: #a5d69b; }
+  .status-pill.closed { background: #d6d0ca; color: #1b1714; }
+}

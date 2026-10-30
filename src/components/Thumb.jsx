@@ -27,7 +27,7 @@ function useThumbs() {
 const idxno = (url) => url?.match(/idxno=(\d+)/)?.[1]
 
 /** 이 가게에 보여 줄 사진. 기사 사진이면 credit 이 true */
-export function usePhoto(r, big) {
+function usePhoto(r, big) {
   const map = useThumbs()
   if (r.photo) return { src: r.photo, credit: false }
   const hit = map?.[idxno(r.article?.url)]
@@ -35,19 +35,32 @@ export function usePhoto(r, big) {
   return null
 }
 
+/** big 이면 상세 화면용 큰 사진 (기사 사진이면 아래에 출처와 기사 링크) */
 export default function Thumb({ r, big = false }) {
   const photo = usePhoto(r, big)
   const [broken, setBroken] = useState(null)
   const cls = `thumb${big ? ' big' : ''}`
   if (photo && broken !== photo.src) {
-    return (
+    const img = (
       <span className={`${cls} has-photo`}>
         <img src={photo.src} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"
           onError={() => setBroken(photo.src)} />
         {photo.credit && !big && <span className="credit">당진시대</span>}
       </span>
     )
+    if (!big) return img
+    return (
+      <figure className="detail-photo">
+        {img}
+        {photo.credit && (
+          <figcaption className="muted small">
+            사진: 당진시대 · <a href={r.article.url} target="_blank" rel="noreferrer">기사 보기</a>
+          </figcaption>
+        )}
+      </figure>
+    )
   }
+  if (big) return null
   return (
     <span className={`${cls} t-${Object.keys(ICONS).indexOf(r.cuisine) + 1 || 8}`} aria-hidden="true">
       {ICONS[r.cuisine] ?? ICONS.기타}

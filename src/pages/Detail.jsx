@@ -1,7 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { COMPANIONS, directionsUrl, show, telHref, useRestaurants, yearsAgo, yesNo } from '../data'
+import { COMPANIONS, directionsUrl, show, status, telHref, useRestaurants, yearsAgo, yesNo } from '../data'
 import Footer from '../components/Footer'
-import Thumb, { usePhoto } from '../components/Thumb'
+import Thumb from '../components/Thumb'
 import { cachedCoords } from '../kakao'
 
 function Row({ label, children }) {
@@ -10,21 +10,6 @@ function Row({ label, children }) {
       <dt>{label}</dt>
       <dd>{children}</dd>
     </div>
-  )
-}
-
-function DetailPhoto({ r }) {
-  const photo = usePhoto(r, true)
-  if (!photo) return null
-  return (
-    <figure className="detail-photo">
-      <Thumb r={r} big />
-      {photo.credit && (
-        <figcaption className="muted small">
-          사진: 당진시대 · <a href={r.article.url} target="_blank" rel="noreferrer">기사 보기</a>
-        </figcaption>
-      )}
-    </figure>
   )
 }
 
@@ -49,16 +34,21 @@ export default function Detail() {
       </header>
 
       <article className="detail">
-        <DetailPhoto r={r} />
+        <Thumb r={r} big />
         <h1>{r.name ?? '상호 확인 중'}</h1>
         <p className="meta">
           <span className="pill">{r.cuisine}</span>
           <span>{show(r.region ?? r.area)}</span>
-          {r.closed === true && <span className="pill warn">폐업</span>}
+          {status(r).label && <span className={`status-pill ${status(r).key}`}>{status(r).label}</span>}
         </p>
         <p className="intro big">{r.intro}</p>
 
-        {age > 3 && r.closed !== true && (
+        {r.closed === true && (
+          <p className="notice">
+            {r.lastChecked ? `${r.lastChecked}에 ` : ''}폐업한 것으로 확인된 곳이에요. 기록으로만 남겨 둡니다.
+          </p>
+        )}
+        {age > 3 && r.closed == null && (
           <p className="notice">
             {r.article.date.slice(0, 4)}년 기사에 소개된 곳이에요. 지금도 영업하는지 방문 전에 확인해 주세요.
           </p>
@@ -84,6 +74,7 @@ export default function Detail() {
         ) : <p>확인 중</p>}
 
         <dl className="info">
+          <Row label="영업 상태">{status(r).text}</Row>
           <Row label="가격대">{show(r.priceRange)}</Row>
           <Row label="영업시간">{show(r.hours)}</Row>
           <Row label="휴무일">{show(r.closedDays)}</Row>

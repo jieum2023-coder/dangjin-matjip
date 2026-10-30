@@ -19,8 +19,10 @@ export default function Home() {
 
   const list = useMemo(() => {
     if (!data) return []
-    return applyFilters(data, f).sort((a, b) => (b.article.date ?? '').localeCompare(a.article.date ?? ''))
-  }, [data, f.c.join(), f.w.join(), f.a.join(), f.d.join(), f.q, f.hint])
+    return applyFilters(data, f).sort((a, b) =>
+      (a.closed === true) - (b.closed === true) || (b.article.date ?? '').localeCompare(a.article.date ?? ''))
+  }, [data, f.c.join(), f.w.join(), f.a.join(), f.d.join(), f.q, f.hint, f.closed])
+  const closedCount = useMemo(() => (data ?? []).filter((r) => r.closed === true).length, [data])
 
   if (error) return <p className="status">식당 목록을 불러오지 못했어요. 잠시 후 다시 열어 주세요.</p>
   if (!data) return <p className="status">불러오는 중…</p>
@@ -67,7 +69,14 @@ export default function Home() {
         <span className="result-count">{list.length}곳{count === 0 && ' (식당외 제외)'}</span>
       </div>
 
-      <RandomPick list={list} search={search} />
+      {closedCount > 0 && (
+        <label className="check closed-toggle">
+          <input type="checkbox" checked={f.closed} onChange={(e) => update({ closed: e.target.checked })} />
+          폐업한 곳도 보기 (확인된 폐업 {closedCount}곳)
+        </label>
+      )}
+
+      <RandomPick list={list.filter((r) => r.closed !== true)} search={search} />
 
       {f.view === 'map' ? (
         <MapView list={list} search={search} />
